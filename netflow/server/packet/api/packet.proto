@@ -1,0 +1,51 @@
+syntax = "proto3";
+option go_package = "/gen";
+
+message Packet {
+    string id = 1;
+    string agent_id = 2;
+    string ethernet_id = 3;
+    bytes content = 4;
+}
+
+service PacketService {
+    rpc GetPacket(GetPacketRequest) returns (GetPacketResponse);
+    rpc GetPackets(GetPacketsRequest) returns (GetPacketsResponse);
+    rpc PostPacket(PostPacketRequest) returns (PostPacketResponse);
+    rpc PutPacket(PutPacketRequest) returns (PutPacketResponse);
+    rpc DeletePacket(DeletePacketRequest) returns (DeletePacketResponse);
+}
+
+message GetPacketRequest {
+    string packet_id = 1;
+}
+message GetPacketResponse {
+    Packet packet = 1;
+}
+message GetPacketsRequest {
+}
+message GetPacketsResponse {
+    repeated Packet packets = 1;
+}
+
+message PostPacketRequest {
+    Packet packet = 1;
+}
+message PostPacketResponse {
+    Packet packet = 1;
+}
+
+message PutPacketRequest {
+    string packet_id = 1;
+    Packet packet = 2;
+}
+message PutPacketResponse {
+    Packet packet = 1;
+}
+
+message DeletePacketRequest {
+    string packet_id = 1;
+}
+message DeletePacketResponse {
+    uint32 deleted = 1;
+}

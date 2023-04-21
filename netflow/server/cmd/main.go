@@ -10,6 +10,7 @@ import (
 	agentR "github.com/infEreb/nls/netflow/server/agent/pkg/router"
 	"github.com/infEreb/nls/netflow/server/ethernet/pkg/gateway"
 	ethernetR "github.com/infEreb/nls/netflow/server/ethernet/pkg/router"
+	packetR "github.com/infEreb/nls/netflow/server/packet/pkg/router"
 	"github.com/infEreb/nls/netflow/server/pkg/discovery"
 	"github.com/infEreb/nls/netflow/server/pkg/netflow"
 	"golang.org/x/sync/errgroup"
@@ -18,17 +19,22 @@ import (
 const (
 	AgentName = "agent"
 	EthernetName = "ethernet"
+	PacketName = "packet"
 
 	AgentAddr = "localhost"
 	AgentPort = "9000"
 
 	EtherAddr = "localhost"
 	EtherPort = "9001"
+
+	PacketAddr = "localhost"
+	PacketPort = "9002"
 )
 
 var (
 	AgentID string
 	EthernetID string
+	PacketID string
 )
 
 func agentMicro(ctx context.Context, registy discovery.Registry) http.Handler {
@@ -74,6 +80,28 @@ func ethernetMicro(ctx context.Context, registy discovery.Registry) http.Handler
 	return r
 }
 
+func packetMicro(ctx context.Context, registy discovery.Registry) http.Handler {
+	r := gin.Default()
+	root := r.Group(netflow.ROOT)
+
+	PacketID = discovery.GenerateInstanceID(PacketName)
+	if err := registy.Register(ctx, PacketID, PacketName, PacketAddr, PacketPort); err != nil {
+		log.Fatal(err)
+	}
+	go func() {
+		for {
+			if err := registy.ReportHealthyState(PacketID, PacketName); err != nil {
+				log.Println("Failed to report healthy state: " + err.Error())
+			}
+			time.Sleep(1 * time.Second)
+		}
+	}()
+
+	packetR.RouterGinInit(root, nil)
+
+	return r
+}
+
 var g errgroup.Group
 
 func main() {
@@ -89,6 +117,10 @@ func main() {
 		Addr: EtherAddr+":"+EtherPort,
 		Handler: ethernetMicro(ctx, reg),
 	}
+	packetServer := http.Server{
+		Addr: PacketAddr+":"+PacketPort,
+		Handler: packetMicro(ctx, reg),
+	}
 
 	g.Go(func() error {
 		defer reg.Deregister(ctx, AgentID, AgentName)
@@ -98,6 +130,11 @@ func main() {
 	g.Go(func() error {
 		defer reg.Deregister(ctx, EthernetID, EthernetName)
 		return ethernetServer.ListenAndServe()
+	})
+	
+	g.Go(func() error {
+		defer reg.Deregister(ctx, PacketID, PacketName)
+		return packetServer.ListenAndServe()
 	})
 
 	if err := g.Wait(); err != nil {
