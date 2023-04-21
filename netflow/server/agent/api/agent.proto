@@ -1,0 +1,49 @@
+syntax = "proto3";
+option go_package = "/gen";
+
+message Agent {
+    string id = 1;
+    string hostname = 2;
+    string status = 3;
+}
+
+service AgentService {
+    rpc GetAgent(GetAgentRequest) returns (GetAgentResponse);
+    rpc GetAgents(GetAgentsRequest) returns (GetAgentsResponse);
+    rpc PostAgent(PostAgentRequest) returns (PostAgentResponse);
+    rpc PutAgent(PutAgentRequest) returns (PutAgentResponse);
+    rpc DeleteAgent(DeleteAgentRequest) returns (DeleteAgentResponse);
+}
+
+message GetAgentRequest {
+    string agent_id = 1;
+}
+message GetAgentResponse {
+    Agent agent = 1;
+}
+message GetAgentsRequest {
+}
+message GetAgentsResponse {
+    repeated Agent agent = 1;
+}
+
+message PostAgentRequest {
+    Agent agent = 1;
+}
+message PostAgentResponse {
+    Agent agent = 1;
+}
+
+message PutAgentRequest {
+    Agent agent = 1;
+}
+message PutAgentResponse {
+    Agent agent = 1;
+}
+
+message DeleteAgentRequest {
+    string agent_id = 1;
+}
+message DeleteAgentResponse {
+    int32 deleted = 1;
+}
