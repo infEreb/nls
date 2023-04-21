@@ -9,23 +9,11 @@ import (
 )
 
 func httpHandler(c *agent.ConfigAgent) *handler.HandlerHTTP {
-	repo := repository.NewArrayRepository()
+	repo := repository.NewRepositoryMemory()
 	ctrl := internal.NewController(repo)
 	return handler.NewHandlerHTTP(ctrl)
 }
 
-// func RouterGinInit(r *gin.Engine, c *agent.ConfigAgent) {
-// 	h := handler(c)
-	
-// 	routes := r.Group(agent.ROOT)
-// 	routes.GET("/", func(gctx *gin.Context){
-// 		h.GetAgents(gctx.Writer, gctx.Request)
-// 	})
-
-// 	routes.POST("/", func(gctx *gin.Context){
-// 		h.PostAgent(gctx.Writer, gctx.Request)
-// 	})
-// }
 
 func RouterGinInit(r *gin.RouterGroup, c *agent.ConfigAgent) {
 	h := httpHandler(c)
@@ -33,12 +21,22 @@ func RouterGinInit(r *gin.RouterGroup, c *agent.ConfigAgent) {
 	routes := r.Group(agent.ROOT)
 
 
-	routes.GET("/", h.GetAgents)
-	routes.GET("/:id", h.GetAgent)
+	routes.GET("/", func(ctx *gin.Context){
+		h.GetAgents(ctx.Writer, ctx.Request)
+	})
+	routes.GET("/:id", func(ctx *gin.Context){
+		h.GetAgent(ctx.Writer, ctx.Request, ctx.Param("id"))
+	})
 
-	routes.POST("/", h.PostAgent)
+	routes.POST("/", func(ctx *gin.Context){
+		h.PostAgent(ctx.Writer, ctx.Request)
+	})
 
-	routes.PUT("/:id", h.PutAgent)
+	routes.PUT("/:id", func(ctx *gin.Context){
+		h.PutAgent(ctx.Writer, ctx.Request, ctx.Param("id"))
+	})
 
-	routes.DELETE("/:id", h.DeleteAgent)
+	routes.DELETE("/:id", func(ctx *gin.Context){
+		h.DeleteAgent(ctx.Writer, ctx.Request, ctx.Param("id"))
+	})
 }

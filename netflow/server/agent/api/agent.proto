@@ -24,7 +24,7 @@ message GetAgentResponse {
 message GetAgentsRequest {
 }
 message GetAgentsResponse {
-    repeated Agent agent = 1;
+    repeated Agent agents = 1;
 }
 
 message PostAgentRequest {
@@ -35,7 +35,8 @@ message PostAgentResponse {
 }
 
 message PutAgentRequest {
-    Agent agent = 1;
+    string agent_id = 1;
+    Agent agent = 2;
 }
 message PutAgentResponse {
     Agent agent = 1;
@@ -45,5 +46,5 @@ message DeleteAgentRequest {
     string agent_id = 1;
 }
 message DeleteAgentResponse {
-    int32 deleted = 1;
+    uint32 deleted = 1;
 }

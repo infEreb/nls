@@ -24,7 +24,7 @@ func (c *Controller) FindByID(ctx context.Context, id string) (*agent.Agent, err
 	return c.repo.FindOne(ctx, id)
 }
 
-func (c *Controller) FindAll(ctx context.Context) ([]*agent.Agent, []error) {
+func (c *Controller) FindAll(ctx context.Context) ([]*agent.Agent, error) {
 	return c.repo.FindMany(ctx, nil)
 }
 
@@ -32,6 +32,6 @@ func (c *Controller) UpdateOne(ctx context.Context, a *agent.Agent) (*agent.Agen
 	return c.repo.UpdateOne(ctx, a)
 }
 
-func (c *Controller) DeleteOne(ctx context.Context, filters interface{}) (uint, error) {
+func (c *Controller) DeleteOne(ctx context.Context, filters interface{}) (uint32, error) {
 	return c.repo.DeleteOne(ctx, filters)
 }

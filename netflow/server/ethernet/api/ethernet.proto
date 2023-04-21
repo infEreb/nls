@@ -1,0 +1,55 @@
+syntax = "proto3";
+option go_package = "/gen";
+
+message Ethernet {
+    string id = 1;
+    string agent_id = 2;
+    string name = 3;
+    string dev_name = 4;
+    string desc = 5;
+    repeated string ipv4 = 6; 
+    repeated string ipv6 = 7;
+    string hardware = 8; 
+}
+
+service EthernetService {
+    rpc GetEthernet(GetEthernetRequest) returns (GetEthernetResponse);
+    rpc GetEthernets(GetEthernetsRequest) returns (GetEthernetsResponse);
+    rpc PostEthernet(PostEthernetRequest) returns (PostEthernetResponse);
+    rpc PutEthernet(PutEthernetRequest) returns (PutEthernetResponse);
+    rpc DeleteEthernet(DeleteEthernetRequest) returns (DeleteEthernetResponse);
+}
+
+message GetEthernetRequest {
+    string Ethernet_id = 1;
+}
+message GetEthernetResponse {
+    Ethernet Ethernet = 1;
+}
+message GetEthernetsRequest {
+}
+message GetEthernetsResponse {
+    repeated Ethernet Ethernets = 1;
+}
+
+message PostEthernetRequest {
+    Ethernet Ethernet = 1;
+}
+message PostEthernetResponse {
+    Ethernet Ethernet = 1;
+}
+
+message PutEthernetRequest {
+    string Ethernet_id = 1;
+    Ethernet Ethernet = 2;
+}
+message PutEthernetResponse {
+    Ethernet Ethernet = 1;
+}
+
+message DeleteEthernetRequest {
+    string Ethernet_id = 1;
+}
+message DeleteEthernetResponse {
+    uint32 deleted = 1;
+}

@@ -4,16 +4,16 @@ import (
 	"context"
 	"errors"
 
-	"github.com/infEreb/nls/netflow/server/agent/internal"
-	"github.com/infEreb/nls/netflow/server/agent/pkg/agent"
-	"github.com/infEreb/nls/netflow/server/agent/src/gen"
+	"github.com/infEreb/nls/netflow/server/ethernet/internal"
+	"github.com/infEreb/nls/netflow/server/ethernet/pkg/ethernet"
+	"github.com/infEreb/nls/netflow/server/ethernet/src/gen"
 	"github.com/infEreb/nls/netflow/server/pkg/serror"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type HandlerGRPC struct {
-	gen.AgentServiceServer
+	gen.EthernetServiceServer
 	ctrl *internal.Controller
 }
 
@@ -23,21 +23,21 @@ func NewHandlerGRPC(ctrl *internal.Controller) *HandlerGRPC {
 	}
 }
 
-func (h *HandlerGRPC) GetAgent(ctx context.Context, req *gen.GetAgentRequest) (*gen.GetAgentResponse, error) {
-	if req == nil || req.AgentId == "" {
+func (h *HandlerGRPC) GetEthernet(ctx context.Context, req *gen.GetEthernetRequest) (*gen.GetEthernetResponse, error) {
+	if req == nil || req.EthernetId == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "nil request or empty id")
 	}
-	a, err := h.ctrl.FindByID(ctx, req.AgentId)
+	a, err := h.ctrl.FindByID(ctx, req.EthernetId)
 	if err != nil && errors.As(err, &serror.ErrorNotFound{}) {
 		return nil, status.Errorf(codes.NotFound, err.Error())
 	} else if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
 
-	return &gen.GetAgentResponse{Agent: agent.AgentToProto(a)}, nil
+	return &gen.GetEthernetResponse{Ethernet: ethernet.EthernetToProto(a)}, nil
 }
 
-func (h *HandlerGRPC) GetAgents(ctx context.Context, req *gen.GetAgentsRequest) (*gen.GetAgentsResponse, error) {
+func (h *HandlerGRPC) GetEthernets(ctx context.Context, req *gen.GetEthernetsRequest) (*gen.GetEthernetsResponse, error) {
 	if req == nil  {
 		return nil, status.Errorf(codes.InvalidArgument, "nil request")
 	}
@@ -46,35 +46,35 @@ func (h *HandlerGRPC) GetAgents(ctx context.Context, req *gen.GetAgentsRequest) 
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
 
-	pas := []*gen.Agent{}
+	pas := []*gen.Ethernet{}
 	for _, a := range as {
-		pas = append(pas, agent.AgentToProto(a))
+		pas = append(pas, ethernet.EthernetToProto(a))
 	}
 
-	return &gen.GetAgentsResponse{Agents: pas}, nil
+	return &gen.GetEthernetsResponse{Ethernets: pas}, nil
 }
 
-func (h *HandlerGRPC) PostAgent(ctx context.Context, req *gen.PostAgentRequest) (*gen.PostAgentResponse, error) {
+func (h *HandlerGRPC) PostEthernet(ctx context.Context, req *gen.PostEthernetRequest) (*gen.PostEthernetResponse, error) {
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "nil request")
 	}
 
-	a, err := h.ctrl.CreateOne(ctx, agent.AgentFromProto(req.Agent))
+	a, err := h.ctrl.CreateOne(ctx, ethernet.EthernetFromProto(req.Ethernet))
 	if err != nil && errors.As(err, &serror.ErrorAlreadyExists{}) {
 		return nil, status.Errorf(codes.AlreadyExists, err.Error())
 	} else if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
 
-	return &gen.PostAgentResponse{Agent: agent.AgentToProto(a)}, nil
+	return &gen.PostEthernetResponse{Ethernet: ethernet.EthernetToProto(a)}, nil
 }
 
-func (h *HandlerGRPC) PutAgent(ctx context.Context, req *gen.PutAgentRequest) (*gen.PutAgentResponse, error) {
-	if req == nil || req.AgentId == "" {
+func (h *HandlerGRPC) PutEthernet(ctx context.Context, req *gen.PutEthernetRequest) (*gen.PutEthernetResponse, error) {
+	if req == nil || req.EthernetId == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "nil request or id")
 	}
 
-	a, err := h.ctrl.UpdateOne(ctx, agent.AgentFromProto(req.Agent))
+	a, err := h.ctrl.UpdateOne(ctx, ethernet.EthernetFromProto(req.Ethernet))
 	if err != nil && errors.As(err, &serror.ErrorNotFound{}) {
 		return nil, status.Errorf(codes.NotFound, err.Error())
 	} else if err != nil && errors.As(err, &serror.ErrorUndefinedField{}) {
@@ -83,15 +83,15 @@ func (h *HandlerGRPC) PutAgent(ctx context.Context, req *gen.PutAgentRequest) (*
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
 
-	return &gen.PutAgentResponse{Agent: agent.AgentToProto(a)}, nil
+	return &gen.PutEthernetResponse{Ethernet: ethernet.EthernetToProto(a)}, nil
 }
 
-func (h *HandlerGRPC) DeleteAgent(ctx context.Context, req *gen.DeleteAgentRequest) (*gen.DeleteAgentResponse, error) {
-	if req == nil || req.AgentId == "" {
+func (h *HandlerGRPC) DeleteEthernet(ctx context.Context, req *gen.DeleteEthernetRequest) (*gen.DeleteEthernetResponse, error) {
+	if req == nil || req.EthernetId == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "nil request or id")
 	}
 
-	n, err := h.ctrl.DeleteOne(ctx, req.AgentId)
+	n, err := h.ctrl.DeleteOne(ctx, req.EthernetId)
 	if err != nil && errors.As(err, &serror.ErrorNotFound{}) {
 		return nil, status.Errorf(codes.NotFound, err.Error())
 	} else if err != nil && errors.As(err, &serror.ErrorUnexpectedType{}) {
@@ -100,5 +100,5 @@ func (h *HandlerGRPC) DeleteAgent(ctx context.Context, req *gen.DeleteAgentReque
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
 
-	return &gen.DeleteAgentResponse{Deleted: n}, nil
+	return &gen.DeleteEthernetResponse{Deleted: n}, nil
 } 
