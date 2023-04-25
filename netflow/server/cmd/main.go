@@ -7,10 +7,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	agentR "github.com/infEreb/nls/netflow/server/agent/pkg/router"
-	"github.com/infEreb/nls/netflow/server/ethernet/pkg/gateway"
-	ethernetR "github.com/infEreb/nls/netflow/server/ethernet/pkg/router"
-	packetR "github.com/infEreb/nls/netflow/server/packet/pkg/router"
+	agentR "github.com/infEreb/nls/netflow/server/app/agent/pkg/router"
+	"github.com/infEreb/nls/netflow/server/app/ethernet/pkg/gateway"
+	ethernetR "github.com/infEreb/nls/netflow/server/app/ethernet/pkg/router"
+	packetR "github.com/infEreb/nls/netflow/server/app/packet/pkg/router"
 	"github.com/infEreb/nls/netflow/server/pkg/discovery"
 	"github.com/infEreb/nls/netflow/server/pkg/netflow"
 	"golang.org/x/sync/errgroup"
@@ -75,7 +75,7 @@ func ethernetMicro(ctx context.Context, registy discovery.Registry) http.Handler
 		}
 	}()
 
-	ethernetR.RouterGinInit(root, nil, gateway.NewHTTP(registy))
+	ethernetR.RouterGinInit(root, nil, gateway.NewAgentGatewayHTTP(registy))
 
 	return r
 }

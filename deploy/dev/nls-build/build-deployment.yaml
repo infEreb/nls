@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nls-build
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      app: nls-build
+  template:
+    metadata:
+      labels:
+        app: nls-build
+    spec:
+      container:
+      - name: build
+        image: nls/nls-build:latest
+        imagePullPolicy: IfNotPresent

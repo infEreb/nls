@@ -70,7 +70,7 @@ func (r *RegistryMemory) ReportHealthyState(instanceID string, serviceName strin
 	return nil
 }
 
-func (r *RegistryMemory) ServiceAdresses(ctx context.Context, serviceName string) ([]string, error) {
+func (r *RegistryMemory) ServiceAddresses(ctx context.Context, serviceName string) ([]string, error) {
 	if len(r.serviceAddrs[serviceName]) == 0 {
 		return nil, serror.ErrorNotFound{Err: fmt.Errorf("not found service %s", serviceName)}
 	}

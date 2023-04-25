@@ -10,7 +10,7 @@ import (
 type Registry interface {
 	Register(ctx context.Context, instanceID string, serviceName string, addr string, port string) error
 	Deregister(ctx context.Context, instanceID string, serviceName string) error
-	ServiceAdresses(ctx context.Context, serviceName string) ([]string, error)
+	ServiceAddresses(ctx context.Context, serviceName string) ([]string, error)
 	ReportHealthyState(instanceID string, serviceName string) error
 }
 

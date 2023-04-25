@@ -1,0 +1,5 @@
+api:
+  port: 8081
+  logFile: /app/logs/agent.log
+  type: dev
+  
