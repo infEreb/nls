@@ -19,6 +19,7 @@ NETFLOW_DIR=$BUILD_DIR/netflow
 if [ ! -d $NETFLOW_DIR ]; then
     mkdir -p $NETFLOW_DIR/configs
 fi
+cp $NETFLOW_REPO_DIR/netflow/Dockerfile $NETFLOW_DIR
 
 # Agent build
 AGENT_DIR=$NETFLOW_DIR/agent
@@ -27,6 +28,7 @@ if [ ! -d $AGENT_DIR ]; then
 fi
 
 cp $NETFLOW_REPO_DIR/agent/configs/* $AGENT_DIR/configs
+cp $NETFLOW_REPO_DIR/agent/Dockerfile $AGENT_DIR
 go env GOBIN=$AGENT_DIR
 go install $AGENT_DIR/cmd/agent
 
@@ -38,5 +40,6 @@ if [ ! -d $ETHERNET_DIR ]; then
 fi
 
 cp $NETFLOW_REPO_DIR/ethernet/configs/* $ETHERNET_DIR/configs
+cp $NETFLOW_REPO_DIR/ethernet/Dockerfile $ETHERNET_DIR
 go env GOBIN=$ETHERNET_DIR
 go install $ETHERNET_DIR/cmd/ethernet
